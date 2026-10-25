@@ -26,7 +26,7 @@ def main():
     parser.add_argument('--serial', required=True, help='Explicit emulator serial; physical devices are refused')
     parser.add_argument('--adb-port', default='5037')
     parser.add_argument('--output', type=Path, default=ROOT / 'tests/output')
-    parser.add_argument('--mode', choices=('all', 'pairing', 'playback', 'updates'), default='all')
+    parser.add_argument('--mode', choices=('all', 'pairing', 'playback', 'updates', 'input'), default='all')
     args = parser.parse_args()
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
@@ -128,6 +128,16 @@ def main():
         assert 'INSTRUMENTATION_RESULT: error=' not in result and 'PASS: updates' in result, result
         print('PASS: release parsing, bounded response and idle native update recommendation')
         return
+    if args.mode in ('all', 'input'):
+        device('shell', 'am', 'force-stop', 'dev.elias.cast22')
+        result = device('shell', 'am', 'instrument', '-w', '-r', '-e', 'mode', 'input',
+                        'dev.elias.cast22.probe/dev.elias.cast22.ReceiverProbe', timeout=120)
+        (output / 'input.txt').write_text(result + '\n')
+        device('pull', '/sdcard/Android/data/dev.elias.cast22/files/validation', str(output))
+        assert 'INSTRUMENTATION_RESULT: error=' not in result and 'PASS: input' in result, result
+        print('PASS: remote/touch native keyboard, IME text entry, Done/Back, Save persistence and cancellation')
+        if args.mode == 'input':
+            return
     device('shell', 'am', 'force-stop', 'dev.elias.cast22')
     result = device('shell', 'am', 'instrument', '-w', '-r', '-e', 'mode', 'playback',
                     'dev.elias.cast22.probe/dev.elias.cast22.ReceiverProbe', timeout=150)

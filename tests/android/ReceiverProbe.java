@@ -1,6 +1,7 @@
 package dev.elias.cast22;
 
 import android.app.Instrumentation;
+import android.accessibilityservice.AccessibilityServiceInfo;
 import android.content.*;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -10,6 +11,10 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
+import android.view.accessibility.AccessibilityWindowInfo;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
 import android.widget.TextView;
 import android.widget.Switch;
 import android.widget.EditText;
@@ -33,7 +38,7 @@ public final class ReceiverProbe extends Instrumentation {
    waitForIdleSync();Thread.sleep(1500);service=ReceiverService.instance;
    if(service==null)throw new AssertionError("Receiver service unavailable");
    saved=service.snapshot();
-   if(mode.equals("pairing"))pairing();else if(mode.equals("updates"))updates();else playback();
+   if(mode.equals("pairing"))pairing();else if(mode.equals("updates"))updates();else if(mode.equals("input"))input();else playback();
    result.putString("result","PASS: "+mode);
   }catch(Throwable e){result.putString("error",e.toString());code=1;try{if(activity!=null)screenshot("failure");}catch(Exception ignored){}}
   finally{if(saved!=null&&service!=null)try{service.command("settings",saved);}catch(Exception ignored){}}
@@ -111,6 +116,81 @@ public final class ReceiverProbe extends Instrumentation {
   Thread.sleep(700);if(readUi(()->modal())!=null)throw new AssertionError("Later did not dismiss update");
   readUi(()->{java.lang.reflect.Field field=MainActivity.class.getDeclaredField("pendingUpdate");field.setAccessible(true);field.set(activity,update);return null;});
   Thread.sleep(700);if(readUi(()->modal())!=null)throw new AssertionError("Update repeated during same launch");
+ }
+ private boolean imeVisible()throws Exception{
+  if(android.os.Build.VERSION.SDK_INT>=30&&Boolean.TRUE.equals(readUi(()->{
+   Dialog dialog=modal();View decor=dialog==null?activity.getWindow().getDecorView():dialog.getWindow().getDecorView();
+   WindowInsets insets=decor.getRootWindowInsets();return insets!=null&&insets.isVisible(WindowInsets.Type.ime());
+  })))return true;
+  for(AccessibilityWindowInfo window:getUiAutomation().getWindows())
+   if(window.getType()==AccessibilityWindowInfo.TYPE_INPUT_METHOD)return true;
+  return false;
+ }
+ private void awaitIme(boolean visible)throws Exception{
+  long deadline=SystemClock.uptimeMillis()+8000;
+  while(SystemClock.uptimeMillis()<deadline){if(imeVisible()==visible){Thread.sleep(200);return;}Thread.sleep(100);}
+  throw new AssertionError(visible?"Remote activation did not show the real system IME":"System IME did not hide after finishing input");
+ }
+ private InputConnection nameInput()throws Exception{
+  return (InputConnection)readUi(()->{
+   EditText name=(EditText)find(R.id.device_name);
+   if(!name.hasFocus())throw new IllegalStateException("Name editor lost focus during IME input");
+   InputConnection input=name.onCreateInputConnection(new EditorInfo());
+   if(input==null)throw new IllegalStateException("Name editor has no input connection");return input;
+  });
+ }
+ private void enterName(String value)throws Exception{
+  InputConnection input=nameInput();
+  readUi(()->{
+   EditText name=(EditText)find(R.id.device_name);input.beginBatchEdit();
+   try{
+    input.finishComposingText();
+    if(!input.setSelection(0,name.length())||!input.commitText(value,1))throw new IllegalStateException("IME could not replace receiver name");
+   }finally{input.endBatchEdit();}
+   return null;
+  });
+  expectText(R.id.device_name,value);
+ }
+ private void finishName()throws Exception{
+  InputConnection input=nameInput();
+  readUi(()->{if(!input.performEditorAction(EditorInfo.IME_ACTION_DONE))throw new IllegalStateException("IME Done was not accepted");return null;});
+  awaitIme(false);expectText(R.id.dialog_title,"Settings");expectFocus(R.id.quality);
+ }
+ private void openSettings()throws Exception{
+  expectFocus(R.id.dock_settings);key(KeyEvent.KEYCODE_DPAD_CENTER);expectText(R.id.dialog_title,"Settings");
+ }
+ private void goToAction(boolean save)throws Exception{
+  expectFocus(R.id.quality);
+  int[] route=save?new int[]{R.id.fps,R.id.audio,R.id.pin_required,R.id.keep_awake,R.id.cancel_settings,R.id.save_settings}
+                  :new int[]{R.id.fps,R.id.audio,R.id.pin_required,R.id.keep_awake,R.id.cancel_settings};
+  for(int id:route){key(KeyEvent.KEYCODE_DPAD_DOWN);expectFocus(id);}
+  key(KeyEvent.KEYCODE_DPAD_CENTER);
+ }
+ private void expectSavedName(String expected)throws Exception{
+  long deadline=SystemClock.uptimeMillis()+5000;
+  while(SystemClock.uptimeMillis()<deadline&&!expected.equals(service.snapshot().optString("name")))Thread.sleep(50);
+  if(!expected.equals(service.snapshot().optString("name")))throw new AssertionError("Receiver did not apply edited name");
+  String stored=getTargetContext().getSharedPreferences("22cast",Context.MODE_PRIVATE).getString("name","");
+  if(!expected.equals(stored))throw new AssertionError("Edited name was not persisted in preferences");
+ }
+ private void input()throws Exception{
+  AccessibilityServiceInfo info=getUiAutomation().getServiceInfo();
+  info.flags|=AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS;getUiAutomation().setServiceInfo(info);
+  // Navigation and activation use remote keys. Never force editor focus or mutate it with setText.
+  expectFocus(R.id.dock_connect);key(KeyEvent.KEYCODE_DPAD_RIGHT);key(KeyEvent.KEYCODE_DPAD_RIGHT);openSettings();
+  awaitIme(false);key(KeyEvent.KEYCODE_DPAD_DOWN);expectFocus(R.id.device_name);
+  key(KeyEvent.KEYCODE_DPAD_CENTER);awaitIme(true);screenshot("input-remote-keyboard");
+  enterName("22Cast Remote Probe");finishName();goToAction(true);expectSavedName("22Cast Remote Probe");
+  openSettings();expectText(R.id.device_name,"22Cast Remote Probe");
+  key(KeyEvent.KEYCODE_DPAD_DOWN);expectFocus(R.id.device_name);key(KeyEvent.KEYCODE_DPAD_CENTER);awaitIme(true);
+  enterName("22Cast Unsaved Probe");key(KeyEvent.KEYCODE_BACK);awaitIme(false);
+  expectText(R.id.dialog_title,"Settings");expectFocus(R.id.device_name);
+  key(KeyEvent.KEYCODE_DPAD_DOWN);goToAction(false);expectSavedName("22Cast Remote Probe");
+  openSettings();expectText(R.id.device_name,"22Cast Remote Probe");
+  float[] point=(float[])readUi(()->{View name=find(R.id.device_name);int[] location=new int[2];name.getLocationOnScreen(location);return new float[]{location[0]+name.getWidth()/2f,location[1]+name.getHeight()/2f};});
+  tap(point[0],point[1]);awaitIme(true);enterName("22Cast Touch Probe");finishName();goToAction(false);
+  expectSavedName("22Cast Remote Probe");openSettings();expectText(R.id.device_name,"22Cast Remote Probe");
+  screenshot("input-persisted-name");key(KeyEvent.KEYCODE_BACK);
  }
  private void socketRecovery()throws Exception{
   int port=Integer.parseInt(service.snapshot().getString("port"));

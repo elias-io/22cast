@@ -378,7 +378,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
         Toast.makeText(this, error.message ?: "Could not apply this change", Toast.LENGTH_SHORT).show(); false
     }
 
-    private fun dialog(title: String, tag: String, height: Int = 590, content: (LinearLayout, Button) -> Unit) {
+    private fun dialog(title: String, tag: String, height: Int = 590, acceptsText: Boolean = false, content: (LinearLayout, Button) -> Unit) {
         modal?.dismiss()
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -405,7 +405,9 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             setDimAmount(.78f); addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
             setLayout(min(px(650), resources.displayMetrics.widthPixels - px(64)), min(px(height), resources.displayMetrics.heightPixels - px(64)))
-            setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE or WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
+            setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE or
+                if (acceptsText) WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED
+                else WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
             decorView.systemUiVisibility = immersive
         }
         close.requestFocus()
@@ -429,11 +431,32 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             view.nextFocusDownId = fields[(index + 1) % fields.size].id
             view.nextFocusUpId = fields[(index + fields.size - 1) % fields.size].id
             if (view is EditText) view.setOnKeyListener { _, key, event ->
-                if (event.action == KeyEvent.ACTION_DOWN && (key == KeyEvent.KEYCODE_DPAD_DOWN || key == KeyEvent.KEYCODE_DPAD_UP)) {
+                if (key in intArrayOf(KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER,
+                        KeyEvent.KEYCODE_NUMPAD_ENTER, KeyEvent.KEYCODE_BUTTON_A) &&
+                    event.flags and KeyEvent.FLAG_EDITOR_ACTION == 0) {
+                    if (event.action == KeyEvent.ACTION_UP && !event.isCanceled) showNameKeyboard(view)
+                    true
+                } else if (event.action == KeyEvent.ACTION_DOWN && !keyboardVisible(view) &&
+                    (key == KeyEvent.KEYCODE_DPAD_DOWN || key == KeyEvent.KEYCODE_DPAD_UP)) {
                     fields[(index + if (key == KeyEvent.KEYCODE_DPAD_DOWN) 1 else fields.size - 1) % fields.size].requestFocus(); true
                 } else false
             }
         }
+    }
+    private fun showNameKeyboard(editor: EditText) {
+        if (!editor.requestFocus()) return
+        // A remote Select is an explicit request. SHOW_IMPLICIT may be ignored on TVs.
+        editor.post {
+            if (editor.isAttachedToWindow && editor.hasWindowFocus() && editor.hasFocus())
+                (getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager).showSoftInput(editor, 0)
+        }
+    }
+    private fun keyboardVisible(editor: EditText): Boolean {
+        if (Build.VERSION.SDK_INT >= 30)
+            return editor.rootWindowInsets?.isVisible(WindowInsets.Type.ime()) == true
+        val visible = Rect()
+        editor.getWindowVisibleDisplayFrame(visible)
+        return resources.displayMetrics.heightPixels - visible.bottom > px(100)
     }
     private fun row(parent: LinearLayout, title: String, control: View, detail: String = "") {
         val row = horizontal().apply { background = rounded(Color.TRANSPARENT, 0, line); setPadding(px(2), 0, px(2), 0) }
@@ -477,7 +500,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
 
     private fun showSettings() {
         val state = ReceiverService.instance?.snapshot() ?: current
-        dialog("Settings", "Make yourself at home", 640) { panel, close ->
+        dialog("Settings", "Make yourself at home", 640, acceptsText = true) { panel, close ->
             val body = scroll(panel)
             section(body, "This screen")
             body.addView(label("AirPlay name", 13, muted), LinearLayout.LayoutParams(-1, px(22)))
@@ -487,11 +510,19 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
                 setPadding(px(13), 0, px(13), 0); background = rounded(Color.rgb(19, 22, 17), 8, Color.rgb(69, 77, 59))
                 filters = arrayOf(InputFilter.LengthFilter(50)); inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_WORDS
                 imeOptions = android.view.inputmethod.EditorInfo.IME_ACTION_DONE
-                setOnClickListener { (getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager).showSoftInput(this, InputMethodManager.SHOW_IMPLICIT) }
+                setSelectAllOnFocus(true)
+                setOnClickListener { showNameKeyboard(this) }
             }
             body.addView(name, LinearLayout.LayoutParams(-1, px(43))); space(body, 12)
             section(body, "Picture & sound")
             val quality = option(R.id.quality, listOf("1080", "720"), state.optString("quality", "1080"), "p")
+            name.setOnEditorActionListener { _, action, _ ->
+                if (action == android.view.inputmethod.EditorInfo.IME_ACTION_DONE) {
+                    (getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(name.windowToken, 0)
+                    quality.requestFocus()
+                    true
+                } else false
+            }
             val fps = option(R.id.fps, listOf("30", "60"), state.optInt("fps", 30).toString(), " fps")
             val audio = toggle(R.id.audio, state.optBoolean("audio", true))
             row(body, "Resolution", quality); row(body, "Frame rate", fps); row(body, "Play audio", audio)

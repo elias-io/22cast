@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
   "packageId": "dev.elias.cast22",
-  "versionName": "0.3.0",
-  "versionCode": 6,
+  "versionName": "0.3.1",
+  "versionCode": 7,
   "minSdk": 24,
-  "apkUrl": "https://22cast.elias.dev/downloads/22Cast-0.3.0.apk",
-  "sha256": "5fb3b573afd462127625e4a33a35a2945073bc321e9814ffc9dc3511989c67ae",
+  "apkUrl": "https://22cast.elias.dev/downloads/22Cast-0.3.1.apk",
+  "sha256": "e7bfe42f9d44a28f6fc032cd5e8bb8f0a343b5bc020c46dfa6bdbe00939d9713",
   "signingCertificateSha256": "68bae09ac6bed2a077960176a53008d2deaa071c651c4db27fdf0451c6065a1b",
-  "sourceUrl": "https://22cast.elias.dev/downloads/22Cast-0.3.0-source.zip",
-  "sourceSha256": "a09f1de92b3e0fde831d6a2d673a8f95221d499dc49a125d52bb1b81a9feeaf1",
-  "releaseNotes": "Native Android TV interface, local AirPlay screen mirroring and audio, optional PIN, and automatic update recommendations.",
+  "sourceUrl": "https://22cast.elias.dev/downloads/22Cast-0.3.1-source.zip",
+  "sourceSha256": "b0f1682d30cfd30cda5fb478e135370420cf68306ae83c16150e2ec8223152f7",
+  "releaseNotes": "Fix AirPlay name editing with TV remotes, including opening the on-screen keyboard and returning to Settings after Done.",
   "storeUrl": null
 }

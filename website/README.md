@@ -53,6 +53,10 @@ challenges or other tracking features for this host without updating that policy
 The app-store button is visibly unavailable until a real Google Play listing exists.
 Set `storeUrl` in `release.json` when that listing has been published.
 
+The website’s **Source code** link opens the public
+[GitHub repository](https://github.com/elias-io/22cast). Versioned source archives
+remain available alongside the matching APK downloads.
+
 Legal contact and operator information are in `src/components/Legal.astro`, using the
 owner-supplied business details. Reference sources for the short legal sections:
 

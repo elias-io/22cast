@@ -1,0 +1,6 @@
+#!/bin/sh
+set -eu
+cd "$(dirname "$0")"
+cmake -S native -B native/build/desktop -DCMAKE_BUILD_TYPE=Release -DOPENSSL_ROOT_DIR="${OPENSSL_ROOT_DIR:-/opt/homebrew/opt/openssl@3}"
+cmake --build native/build/desktop -j 8
+exec python3 local.py "$@"

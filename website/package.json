@@ -1,0 +1,25 @@
+{
+  "name": "22cast-website",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.8.0",
+  "scripts": {
+    "dev": "ASTRO_TELEMETRY_DISABLED=1 astro dev --host 127.0.0.1",
+    "check": "ASTRO_TELEMETRY_DISABLED=1 astro check && tsc -p tsconfig.worker.json --noEmit",
+    "prepare:release": "node scripts/prepare-release.mjs",
+    "build": "pnpm prepare:release && ASTRO_TELEMETRY_DISABLED=1 astro build",
+    "preview": "WRANGLER_SEND_METRICS=false wrangler dev --ip 127.0.0.1 --port 2246",
+    "test": "node --test tests/*.test.ts",
+    "types": "WRANGLER_SEND_METRICS=false wrangler types",
+    "deploy:check": "WRANGLER_SEND_METRICS=false wrangler deploy --dry-run",
+    "deploy": "WRANGLER_SEND_METRICS=false wrangler deploy"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "@cloudflare/workers-types": "5.20261025.1",
+    "@types/node": "26.6.5",
+    "astro": "7.4.2",
+    "typescript": "6.0.3",
+    "wrangler": "4.152.0"
+  }
+}

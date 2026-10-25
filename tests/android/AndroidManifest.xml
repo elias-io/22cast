@@ -1,0 +1,5 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="dev.elias.cast22.probe">
+ <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="36"/>
+ <application android:label="22Cast validation probe"/>
+ <instrumentation android:name="dev.elias.cast22.ReceiverProbe" android:targetPackage="dev.elias.cast22"/>
+</manifest>

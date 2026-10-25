@@ -1,0 +1,22 @@
+#pragma once
+#define HAVE_STDINT_H 1
+#define HAVE_INTTYPES_H 1
+#define HAVE_UNISTD_H 1
+#define HAVE_STRING_H 1
+#define HAVE_STRINGS_H 1
+#define HAVE_STRDUP 1
+#define HAVE_STRNDUP 1
+#define HAVE_STPCPY 1
+#define HAVE_STRCASECMP 1
+#define HAVE_GMTIME_R 1
+#define HAVE_LOCALTIME_R 1
+#define HAVE_TIMEGM 1
+#define HAVE_ASPRINTF 1
+#define HAVE_VASPRINTF 1
+#define HAVE_PTHREAD 1
+#define HAVE_ATTRIBUTE_CONSTRUCTOR 1
+#define HAVE_TM_TM_GMTOFF 1
+#define HAVE_TM_TM_ZONE 1
+#define PACKAGE_VERSION "2.3.0"
+#define PACKAGE_STRING "libplist 2.3.0"
+#define PACKAGE_NAME "libplist"

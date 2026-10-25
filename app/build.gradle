@@ -1,0 +1,21 @@
+plugins { id 'com.android.application'; id 'org.jetbrains.kotlin.android' }
+def releaseVersion = new Properties()
+rootProject.file('version.properties').withInputStream { releaseVersion.load(it) }
+android {
+    namespace 'dev.elias.cast22'
+    compileSdk 36
+    ndkVersion '28.2.13676358'
+    defaultConfig {
+        applicationId 'dev.elias.cast22'
+        minSdk 24
+        targetSdk 36
+        versionCode releaseVersion.getProperty('code').toInteger()
+        versionName releaseVersion.getProperty('name')
+        ndk { abiFilters 'arm64-v8a', 'armeabi-v7a' }
+    }
+    sourceSets { main { jniLibs.srcDirs = ['../native/prebuilt-jni'] } }
+    signingConfigs { debug { storeFile file('../.native-deps/debug.keystore') } }
+    buildTypes { release { minifyEnabled false; signingConfig signingConfigs.debug } }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+}
+kotlin { compilerOptions { jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17 } }

@@ -1,0 +1,50 @@
+[
+  {
+    "file": "kotlin-compiler-embeddable-2.1.21.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-compiler-embeddable/2.1.21/kotlin-compiler-embeddable-2.1.21.jar",
+    "sha256": "67a2e3673765f097725608cc7c843b0d8fdd94bd9af41327211361614aa57d49",
+    "runtime": false
+  },
+  {
+    "file": "kotlin-stdlib-2.1.21.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/2.1.21/kotlin-stdlib-2.1.21.jar",
+    "sha256": "263bdc679e1f62012db7b091796279b6d71cf36f4797a98ff1ace05835f201c8",
+    "runtime": true
+  },
+  {
+    "file": "kotlin-script-runtime-2.1.21.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-script-runtime/2.1.21/kotlin-script-runtime-2.1.21.jar",
+    "sha256": "d8221f445854f30ac92c248d543609e0ecb5d85bb5ba34c043684b013cb5b897",
+    "runtime": false
+  },
+  {
+    "file": "kotlin-reflect-1.6.10.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-reflect/1.6.10/kotlin-reflect-1.6.10.jar",
+    "sha256": "3277ac102ae17aad10a55abec75ff5696c8d109790396434b496e75087854203",
+    "runtime": false
+  },
+  {
+    "file": "kotlin-daemon-embeddable-2.1.21.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-daemon-embeddable/2.1.21/kotlin-daemon-embeddable-2.1.21.jar",
+    "sha256": "9401effd82de8606df3289308a275cc1d3573768665ca5edd09dc319c71715f4",
+    "runtime": false
+  },
+  {
+    "file": "trove4j-1.0.20200330.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/jetbrains/intellij/deps/trove4j/1.0.20200330/trove4j-1.0.20200330.jar",
+    "sha256": "c5fd725bffab51846bf3c77db1383c60aaaebfe1b7fe2f00d23fe1b7df0a439d",
+    "runtime": false
+  },
+  {
+    "file": "kotlinx-coroutines-core-jvm-1.8.0.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/kotlinx-coroutines-core-jvm/1.8.0/kotlinx-coroutines-core-jvm-1.8.0.jar",
+    "sha256": "9860906a1937490bf5f3b06d2f0e10ef451e65b95b269f22daf68a3d1f5065c5",
+    "runtime": false
+  },
+  {
+    "file": "annotations-13.0.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/jetbrains/annotations/13.0/annotations-13.0.jar",
+    "sha256": "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478",
+    "runtime": true
+  }
+]

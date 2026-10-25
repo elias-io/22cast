@@ -1,0 +1,14 @@
+#!/bin/sh
+set -eu
+cd "$(dirname "$0")"
+python3 scripts/build-native-deps.py
+python3 scripts/build-media-deps.py
+SDK="${ANDROID_HOME:-$HOME/Library/Android/sdk}"
+for ABI in arm64-v8a armeabi-v7a; do
+ cmake -S native -B "native/build/$ABI" -DCMAKE_TOOLCHAIN_FILE="$SDK/ndk/28.2.13676358/build/cmake/android.toolchain.cmake" -DANDROID_ABI="$ABI" -DANDROID_PLATFORM=android-24 -DANDROID_STL=c++_static -DCMAKE_BUILD_TYPE=Release
+ cmake --build "native/build/$ABI" -j 8
+ mkdir -p "native/prebuilt-jni/$ABI"
+ cp "native/build/$ABI/libcast22.so" "native/prebuilt-jni/$ABI/"
+ "$SDK/ndk/28.2.13676358/toolchains/llvm/prebuilt/$(if [ "$(uname)" = Darwin ]; then echo darwin-x86_64; else echo linux-x86_64; fi)/bin/llvm-strip" --strip-unneeded "native/prebuilt-jni/$ABI/libcast22.so"
+done
+python3 scripts/package-android.py

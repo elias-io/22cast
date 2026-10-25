@@ -1,0 +1,10 @@
+<resources>
+ <item type="id" name="home"/><item type="id" name="video_surface"/><item type="id" name="stream_bar"/>
+ <item type="id" name="receiver_name"/><item type="id" name="status_label"/>
+ <item type="id" name="dock_connect"/><item type="id" name="dock_network"/><item type="id" name="dock_settings"/><item type="id" name="dock_about"/>
+ <item type="id" name="dialog_title"/><item type="id" name="close_dialog"/><item type="id" name="device_name"/>
+ <item type="id" name="quality"/><item type="id" name="fps"/><item type="id" name="audio"/><item type="id" name="pin_required"/><item type="id" name="keep_awake"/>
+ <item type="id" name="cancel_settings"/><item type="id" name="save_settings"/><item type="id" name="disconnect"/>
+ <item type="id" name="pin_code"/><item type="id" name="action_pause"/><item type="id" name="action_restart"/><item type="id" name="about_licenses"/>
+ <item type="id" name="update_later"/><item type="id" name="update_download"/>
+</resources>

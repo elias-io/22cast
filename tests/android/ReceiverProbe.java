@@ -312,6 +312,9 @@ public final class ReceiverProbe extends Instrumentation {
   key(KeyEvent.KEYCODE_DPAD_DOWN);expectFocus(R.id.close_dialog);
   key(KeyEvent.KEYCODE_BACK);if(readUi(()->modal())!=null)throw new AssertionError("Native dialog did not close");
   key(KeyEvent.KEYCODE_DPAD_RIGHT);key(KeyEvent.KEYCODE_DPAD_CENTER);expectText(R.id.dialog_title,"A little closer.");
+  key(KeyEvent.KEYCODE_DPAD_DOWN);expectFocus(R.id.about_disclaimer);
+  String disclaimer=(String)readUi(()->((TextView)find(R.id.about_disclaimer)).getText().toString());
+  if(!disclaimer.contains("The legal status of this library and its use is unclear")||!disclaimer.contains("help@elias.dev"))throw new AssertionError("FairPlay disclaimer missing");
   key(KeyEvent.KEYCODE_DPAD_DOWN);expectFocus(R.id.about_licenses);key(KeyEvent.KEYCODE_DPAD_CENTER);expectText(R.id.dialog_title,"Open-source licenses");
   key(KeyEvent.KEYCODE_BACK);key(KeyEvent.KEYCODE_DPAD_LEFT);expectFocus(R.id.dock_settings);
   key(KeyEvent.KEYCODE_DPAD_CENTER);expectText(R.id.dialog_title,"Settings");

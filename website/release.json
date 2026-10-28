@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
   "packageId": "dev.elias.cast22",
-  "versionName": "0.3.1",
-  "versionCode": 7,
+  "versionName": "0.3.2",
+  "versionCode": 8,
   "minSdk": 24,
-  "apkUrl": "https://22cast.elias.dev/downloads/22Cast-0.3.1.apk",
-  "sha256": "e7bfe42f9d44a28f6fc032cd5e8bb8f0a343b5bc020c46dfa6bdbe00939d9713",
+  "apkUrl": "https://22cast.elias.dev/downloads/22Cast-0.3.2.apk",
+  "sha256": "ada1c9cd508a1dd73c7c5fdba817c0657242cd4c022c97ec253c33d6f33c1b27",
   "signingCertificateSha256": "68bae09ac6bed2a077960176a53008d2deaa071c651c4db27fdf0451c6065a1b",
-  "sourceUrl": "https://22cast.elias.dev/downloads/22Cast-0.3.1-source.zip",
-  "sourceSha256": "b0f1682d30cfd30cda5fb478e135370420cf68306ae83c16150e2ec8223152f7",
-  "releaseNotes": "Fix AirPlay name editing with TV remotes, including opening the on-screen keyboard and returning to Settings after Done.",
+  "sourceUrl": "https://22cast.elias.dev/downloads/22Cast-0.3.2-source.zip",
+  "sourceSha256": "46f32c8e4c6c86264f5bd9ba8ef377b992998db159439d80be6e7a6cec246a9c",
+  "releaseNotes": "Include complete MIT license notices and add a FairPlay legal-status disclaimer to the app and website.",
   "storeUrl": null
 }

@@ -584,7 +584,7 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun showAbout() {
-        dialog("A little closer.", "Small screen, meet big screen.", 510) { panel, close ->
+        dialog("A little closer.", "Small screen, meet big screen.", 620) { panel, close ->
             val body = scroll(panel)
             body.addView(label("22Cast", 48, accent)); space(body, 15)
             body.addView(label("Your photos. Your ideas. Your people.\nA quiet place to bring them together on the big screen.", 16, muted))
@@ -593,9 +593,15 @@ class MainActivity : Activity(), SurfaceHolder.Callback {
             body.addView(label("Version $version", 13)); space(body, 13)
             body.addView(label("AirPlay screen mirroring + audio", 13)); space(body, 23)
             body.addView(label("22Cast is an independent open-source project. AirPlay is a trademark of Apple Inc.", 11, muted))
+            space(body, 18)
+            body.addView(label("FairPlay disclaimer", 14)); space(body, 10)
+            val disclaimer = label("22Cast uses the third-party PlayFair library to handle FairPlay transport encryption. The legal status of this library and its use is unclear and may vary by jurisdiction. You are responsible for complying with applicable local law when using 22Cast.\n\nIf you represent Apple and have legal concerns, contact help@elias.dev. We will act immediately to resolve the issue, including removing affected functionality or suspending its distribution as appropriate.", 12, muted).apply {
+                id = R.id.about_disclaimer; isFocusable = true; setLineSpacing(px(4).toFloat(), 1f)
+            }
+            body.addView(disclaimer)
             val licenses = button("Open-source licenses", R.id.about_licenses).apply { setOnClickListener { showLicenses() } }
             val done = button("Back to the big screen", primary = true).apply { setOnClickListener { modal?.dismiss() } }
-            actions(panel, licenses, done); wireVertical(close, licenses, done)
+            actions(panel, licenses, done); wireVertical(close, disclaimer, licenses, done)
         }
     }
     private fun showLicenses() {

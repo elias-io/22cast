@@ -5,6 +5,6 @@
  <item type="id" name="dialog_title"/><item type="id" name="close_dialog"/><item type="id" name="device_name"/>
  <item type="id" name="quality"/><item type="id" name="fps"/><item type="id" name="audio"/><item type="id" name="pin_required"/><item type="id" name="keep_awake"/>
  <item type="id" name="cancel_settings"/><item type="id" name="save_settings"/><item type="id" name="disconnect"/>
- <item type="id" name="pin_code"/><item type="id" name="action_pause"/><item type="id" name="action_restart"/><item type="id" name="about_licenses"/>
+ <item type="id" name="pin_code"/><item type="id" name="action_pause"/><item type="id" name="action_restart"/><item type="id" name="about_licenses"/><item type="id" name="about_disclaimer"/>
  <item type="id" name="update_later"/><item type="id" name="update_download"/>
 </resources>
